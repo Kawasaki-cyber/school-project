@@ -33,13 +33,16 @@ security:
         # Pages publiques
         - { path: ^/login, roles: PUBLIC_ACCESS } 
         - { path: ^/registration, roles: PUBLIC_ACCESS }
-        - { path: ^/customer, roles: PUBLIC_ACCESS }
-        - { path: ^/patient, roles: PUBLIC_ACCESS }
-        - { path: ^/rendez, roles: PUBLIC_ACCESS }
-
-
-        # Pages admin
+        - { path: ^/api, roles: PUBLIC_ACCESS }  # API routes accessible to authenticated users
+        
+        # Pages admin (ADMIN role)
         - { path: ^/admin, roles: ROLE_ADMIN }
+        
+        # Pages medecin (MEDECIN role)
+        - { path: ^/medecin, roles: ROLE_MEDECIN }
+        
+        # Pages patient (PATIENT role)
+        - { path: ^/patient, roles: ROLE_PATIENT }
 
 
 when@test:

@@ -2,6 +2,17 @@
 
 {% block title %}Admin Dashboard{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
     <div class="container-fluid">
@@ -34,43 +45,318 @@
     <div class="row mb-4">
         <div class="col-12">
             <h1 class="display-4 fw-bold">Admin Dashboard</h1>
-            <p class="text-muted">Manage your medical platform</p>
+            <p class="text-muted">Statistics and analytics for your medical platform</p>
         </div>
     </div>
     
-    <div class="row g-4">
-        <div class="col-lg-4 col-md-6">
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body text-center">
                     <i class="fas fa-users fa-3x text-primary mb-3"></i>
                     <h5 class="card-title">👥 Users</h5>
                     <p class="display-5 fw-bold text-primary">{{ users_count }}</p>
-                    <a href="{{ path('app_admin_users') }}" class="btn btn-primary">Manage Users</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-3 col-md-6">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body text-center">
                     <i class="fas fa-user-md fa-3x text-success mb-3"></i>
                     <h5 class="card-title">👨‍⚕️ Doctors</h5>
                     <p class="display-5 fw-bold text-success">{{ medecins_count }}</p>
-                    <a href="{{ path('app_admin_medecins') }}" class="btn btn-success">Manage Doctors</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-3 col-md-6">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body text-center">
                     <i class="fas fa-calendar fa-3x text-info mb-3"></i>
                     <h5 class="card-title">📅 Appointments</h5>
                     <p class="display-5 fw-bold text-info">{{ rendezvous_count }}</p>
-                    <a href="{{ path('app_admin_rendezvous') }}" class="btn btn-info">View Appointments</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">📊 Statistics</h5>
+                    <p class="display-5 fw-bold text-warning">5 Charts</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row g-4">
+        <!-- Chart 1: Appointments by Doctor -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-md"></i> Appointments by Doctor</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="chartByDoctor"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 2: Appointments by Status -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-tasks"></i> Appointments by Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="chartByStatus"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 3: Appointments by Date -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar-day"></i> Appointments by Date (Last 30 Days)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="chartByDate"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 4: Patients by Speciality -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-stethoscope"></i> Patients by Speciality</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="chartBySpecialite"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 5: Appointments per Week -->
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Appointments per Week (Last 12 Weeks)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="chartPerWeek"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Dashboard Statistics Script -->
+    <script>
+        // Dashboard Statistics - Vanilla JavaScript using Fetch API and Chart.js
+        (function() {
+            const apiUrl = '/api/stats';
+            let charts = {};
+
+            async function loadStats() {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('Failed to load statistics');
+                return await response.json();
+            }
+
+            function renderChartByDoctor(data) {
+                const ctx = document.getElementById('chartByDoctor');
+                if (!ctx) return;
+
+                const labels = data.map(item => item.medecin_nom || 'Unknown');
+                const values = data.map(item => parseInt(item.total) || 0);
+
+                charts.byDoctor = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Number of Appointments',
+                            data: values,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            function renderChartByStatus(data) {
+                const ctx = document.getElementById('chartByStatus');
+                if (!ctx) return;
+
+                const labels = data.map(item => item.statut || 'Unknown');
+                const values = data.map(item => parseInt(item.total) || 0);
+                const colors = [
+                    'rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)', 'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ];
+
+                charts.byStatus = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Appointments',
+                            data: values,
+                            backgroundColor: colors.slice(0, labels.length),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+
+            function renderChartByDate(data) {
+                const ctx = document.getElementById('chartByDate');
+                if (!ctx) return;
+
+                data.sort((a, b) => new Date(a.date) - new Date(b.date));
+                const labels = data.map(item => {
+                    const date = new Date(item.date);
+                    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+                });
+                const values = data.map(item => parseInt(item.total) || 0);
+
+                charts.byDate = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Appointments',
+                            data: values,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            function renderChartBySpecialite(data) {
+                const ctx = document.getElementById('chartBySpecialite');
+                if (!ctx) return;
+
+                const labels = data.map(item => item.specialite_nom || 'Unknown');
+                const values = data.map(item => parseInt(item.total) || 0);
+
+                charts.bySpecialite = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Patients',
+                            data: values,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)',
+                                'rgba(255, 206, 86, 0.6)', 'rgba(75, 192, 192, 0.6)',
+                                'rgba(153, 102, 255, 0.6)', 'rgba(255, 159, 64, 0.6)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+
+            function renderChartPerWeek(data) {
+                const ctx = document.getElementById('chartPerWeek');
+                if (!ctx) return;
+
+                data.sort((a, b) => parseInt(a.week) - parseInt(b.week));
+                const labels = data.map(item => {
+                    const year = Math.floor(item.week / 100);
+                    const week = item.week % 100;
+                    return `Week ${week}/${year}`;
+                });
+                const values = data.map(item => parseInt(item.total) || 0);
+
+                charts.perWeek = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Appointments per Week',
+                            data: values,
+                            backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            async function init() {
+                try {
+                    const stats = await loadStats();
+                    renderChartByDoctor(stats.rdvByDoctor || []);
+                    renderChartByStatus(stats.rdvByStatus || []);
+                    renderChartByDate(stats.rdvByDate || []);
+                    renderChartBySpecialite(stats.patientsBySpecialite || []);
+                    renderChartPerWeek(stats.rdvPerWeek || []);
+                } catch (error) {
+                    console.error('Error loading dashboard statistics:', error);
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
 {% endblock %}
