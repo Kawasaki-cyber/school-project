@@ -14,25 +14,68 @@ use Symfony\Component\Routing\Attribute\Route;
 class RegistrationController extends AbstractController
 {
     #[Route('/registration', name: 'app_registration')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
-    {
+    public function register(
+        Request $request, 
+        UserPasswordHasherInterface $userPasswordHasher, 
+        EntityManagerInterface $entityManager
+    ): Response {
+        // Redirect if already logged in
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_admin');
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                /** @var string $plainPassword */
+                $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+                if (empty($plainPassword)) {
+                    $this->addFlash('error', 'Password cannot be empty.');
+                    return $this->render('registration/index.html.twig', [
+                        'registrationForm' => $form,
+                    ]);
+                }
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+                // Check if email already exists
+                $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+                if ($existingUser) {
+                    $this->addFlash('error', 'This email is already registered. Please use a different email or log in.');
+                    return $this->render('registration/index.html.twig', [
+                        'registrationForm' => $form,
+                    ]);
+                }
 
-            // do anything else you need here, like send an email
+                // Encode the plain password
+                $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+                
+                // Set default role as PATIENT (as per requirements: ADMIN, MEDECIN, PATIENT)
+                $user->setRoles(['ROLE_PATIENT']);
 
-            return $this->redirectToRoute('app_login');
+                try {
+                    $entityManager->persist($user);
+                    $entityManager->flush();
+
+                    $this->addFlash('success', 'Registration successful! You can now log in.');
+                    return $this->redirectToRoute('app_login');
+                } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
+                    $this->addFlash('error', 'This email is already registered. Please use a different email or log in.');
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Registration failed: ' . $e->getMessage());
+                }
+            } else {
+                // Form submitted but invalid - show specific errors
+                $errors = [];
+                foreach ($form->getErrors(true) as $error) {
+                    $errors[] = $error->getMessage();
+                }
+                if (!empty($errors)) {
+                    $this->addFlash('error', 'Please correct the following errors: ' . implode(', ', $errors));
+                }
+            }
         }
 
         return $this->render('registration/index.html.twig', [

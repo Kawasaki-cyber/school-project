@@ -11,9 +11,32 @@
                 <p class="text-muted">Join our medical platform to book consultations</p>
             </div>
 
-            {{ form_errors(registrationForm) }}
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
 
-            {{ form_start(registrationForm, {'attr': {'class': 'needs-validation'}}) }}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+
+            {% if not registrationForm.vars.valid %}
+                <div class="alert alert-warning">
+                    <strong>Please fix the following errors:</strong>
+                    <ul class="mb-0">
+                        {% for error in registrationForm.vars.errors %}
+                            <li>{{ error.message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
 
                 <div class="mb-3">
                     {{ form_label(registrationForm.fullName, '👤 Full Name') }}
