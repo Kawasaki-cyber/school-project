@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ user.email }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>{{ user.email }}</h1>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Roles:</strong> 
+                {% for role in user.roles %}
+                    <span class="badge bg-info">{{ role }}</span>
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <form method="POST" action="{{ path('app_admin_user_delete', {id: user.id}) }}" style="display:inline;" onsubmit="return confirm('Are you sure?')">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        <a href="{{ path('app_admin_users') }}" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ medecin.first_name }} {{ medecin.last_name }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>{{ medecin.first_name }} {{ medecin.last_name }}</h1>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <p><strong>License Number:</strong> {{ medecin.license_number }}</p>
+            <p><strong>Specialization:</strong> {{ medecin.specialization }}</p>
+            <p><strong>Email:</strong> {{ medecin.email }}</p>
+            <p><strong>Phone:</strong> {{ medecin.phone }}</p>
+            <p><strong>Address:</strong> {{ medecin.address }}, {{ medecin.city }}</p>
+            <p><strong>Date of Birth:</strong> {{ medecin.date_of_birth|date('Y-m-d') }}</p>
+            <p><strong>License Issue Date:</strong> {{ medecin.license_issue_date|date('Y-m-d') }}</p>
+            <p><strong>License Expiry Date:</strong> {{ medecin.license_expiry_date|date('Y-m-d') }}</p>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{{ path('app_admin_medecin_edit', {id: medecin.id}) }}" class="btn btn-warning">Edit</a>
+        <form method="POST" action="{{ path('app_admin_medecin_delete', {id: medecin.id}) }}" style="display:inline;" onsubmit="return confirm('Are you sure?')">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        <a href="{{ path('app_admin_medecins') }}" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+{% endblock %}

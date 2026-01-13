@@ -13,21 +13,12 @@ class RendezvousController extends AbstractController
     #[Route('/rendezvous', name: 'app_rendezvous')]
     public function index(Request $request, SessionInterface $session): Response
     {
-        $errors = [
-            'login' => $session->get('login_error', ''),
-            'register' => $session->get('register_error', ''),
-        ];
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
 
-        $activeForm = $session->get('active_form', 'login');
-
-        // Clear session messages
-        $session->remove('login_error');
-        $session->remove('register_error');
-        $session->remove('active_form');
-
-        return $this->render('customer/rendezvous.html.twig', [
-            'errors' => $errors,
-            'active_form' => $activeForm,
+        return $this->render('rendezvous/index.html.twig', [
+            'controller_name' => 'RendezvousController',
         ]);
     }
 }

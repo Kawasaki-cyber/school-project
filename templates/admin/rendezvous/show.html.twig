@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rendezvous Details{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Rendezvous #{{ rendezvous.id }}</h1>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <p><strong>Patient:</strong> {{ rendezvous.patient.first_name ?? 'N/A' }} {{ rendezvous.patient.last_name ?? '' }}</p>
+            <p><strong>Medecin:</strong> {{ rendezvous.medecin.first_name ?? 'N/A' }} {{ rendezvous.medecin.last_name ?? '' }}</p>
+            <p><strong>Date:</strong> {{ rendezvous.appointment_date|date('Y-m-d H:i') }}</p>
+            <p><strong>Status:</strong> <span class="badge bg-primary">{{ rendezvous.status }}</span></p>
+            <p><strong>Reason:</strong> {{ rendezvous.reason ?? 'N/A' }}</p>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{{ path('app_admin_rendezvous') }}" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="{{ path('app_admin') }}">
+            <i class="fas fa-stethoscope"></i> Medical Admin
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_admin_users') }}">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_admin_medecins') }}">Doctors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_admin_rendezvous') }}">Appointments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4 fw-bold">Admin Dashboard</h1>
+            <p class="text-muted">Manage your medical platform</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">👥 Users</h5>
+                    <p class="display-5 fw-bold text-primary">{{ users_count }}</p>
+                    <a href="{{ path('app_admin_users') }}" class="btn btn-primary">Manage Users</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-md fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">👨‍⚕️ Doctors</h5>
+                    <p class="display-5 fw-bold text-success">{{ medecins_count }}</p>
+                    <a href="{{ path('app_admin_medecins') }}" class="btn btn-success">Manage Doctors</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">📅 Appointments</h5>
+                    <p class="display-5 fw-bold text-info">{{ rendezvous_count }}</p>
+                    <a href="{{ path('app_admin_rendezvous') }}" class="btn btn-info">View Appointments</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

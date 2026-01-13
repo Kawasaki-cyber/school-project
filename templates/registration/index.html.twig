@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sign Up - Medical Platform{% endblock %}
+
+{% block body %}
+<div class="container-fluid d-flex align-items-center justify-content-center min-vh-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="card shadow-lg" style="width: 100%; max-width: 500px;">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-primary mb-2">Create Your Account</h2>
+                <p class="text-muted">Join our medical platform to book consultations</p>
+            </div>
+
+            {{ form_errors(registrationForm) }}
+
+            {{ form_start(registrationForm, {'attr': {'class': 'needs-validation'}}) }}
+
+                <div class="mb-3">
+                    {{ form_label(registrationForm.fullName, '👤 Full Name') }}
+                    {{ form_widget(registrationForm.fullName, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Enter your full name'}}) }}
+                    {{ form_errors(registrationForm.fullName) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(registrationForm.phone, '📞 Phone Number') }}
+                    {{ form_widget(registrationForm.phone, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Enter your phone number'}}) }}
+                    {{ form_errors(registrationForm.phone) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(registrationForm.email, '📧 Email') }}
+                    {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Enter your email'}}) }}
+                    {{ form_errors(registrationForm.email) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(registrationForm.plainPassword, '🔒 Password') }}
+                    {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Create a strong password'}}) }}
+                    {{ form_errors(registrationForm.plainPassword) }}
+                </div>
+
+                <div class="mb-3 form-check">
+                    {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(registrationForm.agreeTerms, 'I agree to the terms and conditions', {'label_attr': {'class': 'form-check-label'}}) }}
+                    {{ form_errors(registrationForm.agreeTerms) }}
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+
+            {{ form_end(registrationForm) }}
+
+            <div class="mt-4 text-center">
+                <p class="text-muted">Already have an account? <a href="{{ path('app_login') }}" class="text-decoration-none fw-bold">Sign in here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

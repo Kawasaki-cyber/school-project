@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rendezvous List{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>📅 Rendezvous Management</h1>
+
+    {% if rendezvous is empty %}
+        <div class="alert alert-info">No rendezvous found.</div>
+    {% else %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Medecin</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rdv in rendezvous %}
+                    <tr>
+                        <td>{{ rdv.id }}</td>
+                        <td>{{ rdv.patient.first_name ?? 'N/A' }} {{ rdv.patient.last_name ?? '' }}</td>
+                        <td>{{ rdv.medecin.first_name ?? 'N/A' }} {{ rdv.medecin.last_name ?? '' }}</td>
+                        <td>{{ rdv.appointment_date|date('Y-m-d H:i') }}</td>
+                        <td><span class="badge bg-primary">{{ rdv.status }}</span></td>
+                        <td>
+                            <a href="{{ path('app_admin_rendezvous_show', {id: rdv.id}) }}" class="btn btn-sm btn-info">View</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <a href="{{ path('app_admin') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Medecins{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>👨‍⚕️ Medecins</h1>
+        <a href="{{ path('app_admin_medecin_new') }}" class="btn btn-success">+ Add Medecin</a>
+    </div>
+
+    {% if medecins is empty %}
+        <div class="alert alert-info">No medecins found.</div>
+    {% else %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>License</th>
+                    <th>Specialization</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medecin in medecins %}
+                    <tr>
+                        <td>{{ medecin.first_name }} {{ medecin.last_name }}</td>
+                        <td>{{ medecin.license_number }}</td>
+                        <td>{{ medecin.specialization }}</td>
+                        <td>{{ medecin.email }}</td>
+                        <td>{{ medecin.phone }}</td>
+                        <td>
+                            <a href="{{ path('app_admin_medecin_show', {id: medecin.id}) }}" class="btn btn-sm btn-info">View</a>
+                            <a href="{{ path('app_admin_medecin_edit', {id: medecin.id}) }}" class="btn btn-sm btn-warning">Edit</a>
+                            <form method="POST" action="{{ path('app_admin_medecin_delete', {id: medecin.id}) }}" style="display:inline;" onsubmit="return confirm('Are you sure?')">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <a href="{{ path('app_admin') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}

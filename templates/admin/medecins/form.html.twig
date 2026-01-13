@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>{{ title }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary mt-3">Save</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_admin_medecins') }}" class="btn btn-secondary mt-3">Cancel</a>
+</div>
+{% endblock %}

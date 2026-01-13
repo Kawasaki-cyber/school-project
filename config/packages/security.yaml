@@ -32,6 +32,7 @@ security:
     access_control:
         # Pages publiques
         - { path: ^/login, roles: PUBLIC_ACCESS } 
+        - { path: ^/registration, roles: PUBLIC_ACCESS }
         - { path: ^/customer, roles: PUBLIC_ACCESS }
         - { path: ^/patient, roles: PUBLIC_ACCESS }
         - { path: ^/rendez, roles: PUBLIC_ACCESS }

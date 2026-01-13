@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>👥 Users Management</h1>
+
+    {% if users is empty %}
+        <div class="alert alert-info">No users found.</div>
+    {% else %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% for role in user.roles %}
+                                <span class="badge bg-info">{{ role }}</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <a href="{{ path('app_admin_user_show', {id: user.id}) }}" class="btn btn-sm btn-info">View</a>
+                            <form method="POST" action="{{ path('app_admin_user_delete', {id: user.id}) }}" style="display:inline;" onsubmit="return confirm('Are you sure?')">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <a href="{{ path('app_admin') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}

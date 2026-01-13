@@ -500,4 +500,134 @@
             text-align: center;
             border: 1px solid #c3e6cb;
         }
-    
+    /* =========================
+   AUTH / LOGIN PAGE
+   ========================= */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--light-gray);
+    padding: 40px 20px;
+}
+
+.auth-card {
+    background: white;
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.auth-card h1 {
+    text-align: center;
+    font-size: 2rem;
+    color: var(--primary-dark);
+    margin-bottom: 1.8rem;
+}
+
+/* Form fields */
+.auth-card label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--gray-color);
+}
+
+.auth-card input[type="email"],
+.auth-card input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    margin-bottom: 20px;
+    transition: var(--transition);
+}
+
+.auth-card input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+/* Remember me */
+.auth-card .checkbox {
+    margin-bottom: 20px;
+}
+
+.auth-card .checkbox label {
+    font-weight: normal;
+    color: var(--gray-color);
+}
+
+/* Button */
+.auth-card button {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--border-radius);
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.auth-card button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* Error alert */
+.auth-alert {
+    background-color: #fdecea;
+    color: #b71c1c;
+    border: 1px solid #f5c2c7;
+    padding: 12px 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* Logged user info */
+.auth-logged {
+    background-color: #e8f0fe;
+    color: var(--primary-dark);
+    padding: 12px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.auth-logged a {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Links under form */
+.auth-links {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.auth-links a {
+    margin: 0 8px;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 30px 25px;
+    }
+
+    .auth-card h1 {
+        font-size: 1.7rem;
+    }
+}

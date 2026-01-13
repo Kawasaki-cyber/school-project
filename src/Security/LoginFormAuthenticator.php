@@ -47,11 +47,19 @@ public function onAuthenticationSuccess(
     TokenInterface $token,
     string $firewallName
 ): ?Response {
+    // Get the user from the token
+    $user = $token->getUser();
+    
+    // Check if user has ROLE_ADMIN
+    if ($user && in_array('ROLE_ADMIN', $user->getRoles())) {
+        return new RedirectResponse($this->urlGenerator->generate('app_admin'));
+    }
+
     if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
         return new RedirectResponse($targetPath);
     }
 
-    // Redirection par défaut après login
+    // Default redirect
     return new RedirectResponse($this->urlGenerator->generate('app_login'));
 }
 
