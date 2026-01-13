@@ -28,40 +28,67 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        $email = $request->getPayload()->getString('email');
+        // Get email from _username field (Symfony form convention)
+        $email = $request->request->get('_username', '');
+        
+        // Fallback: try 'email' field if _username is not set
+        if (empty($email)) {
+            $email = $request->request->get('email', '');
+        }
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
+        // Get password from _password field (Symfony form convention)
+        $password = $request->request->get('_password', '');
+        
+        // Fallback: try 'password' field if _password is not set
+        if (empty($password)) {
+            $password = $request->request->get('password', '');
+        }
+
+        // Get CSRF token
+        $csrfToken = $request->request->get('_csrf_token', '');
+
         return new Passport(
             new UserBadge($email),
-            new PasswordCredentials($request->getPayload()->getString('password')),
+            new PasswordCredentials($password),
             [
-                new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
+                new CsrfTokenBadge('authenticate', $csrfToken),
                 new RememberMeBadge(),
             ]
         );
     }
 
-public function onAuthenticationSuccess(
-    Request $request,
-    TokenInterface $token,
-    string $firewallName
-): ?Response {
-    // Get the user from the token
-    $user = $token->getUser();
-    
-    // Check if user has ROLE_ADMIN
-    if ($user && in_array('ROLE_ADMIN', $user->getRoles())) {
+    public function onAuthenticationSuccess(
+        Request $request,
+        TokenInterface $token,
+        string $firewallName
+    ): ?Response {
+        // Get the user from the token
+        $user = $token->getUser();
+        
+        // Check if user has ROLE_ADMIN
+        if ($user && in_array('ROLE_ADMIN', $user->getRoles())) {
+            return new RedirectResponse($this->urlGenerator->generate('app_admin'));
+        }
+        
+        // Check if user has ROLE_MEDECIN
+        if ($user && in_array('ROLE_MEDECIN', $user->getRoles())) {
+            return new RedirectResponse($this->urlGenerator->generate('app_admin'));
+        }
+        
+        // Check if user has ROLE_PATIENT
+        if ($user && in_array('ROLE_PATIENT', $user->getRoles())) {
+            return new RedirectResponse($this->urlGenerator->generate('app_rendezvous'));
+        }
+
+        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
+            return new RedirectResponse($targetPath);
+        }
+
+        // Default redirect to admin dashboard or home
         return new RedirectResponse($this->urlGenerator->generate('app_admin'));
     }
-
-    if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-        return new RedirectResponse($targetPath);
-    }
-
-    // Default redirect
-    return new RedirectResponse($this->urlGenerator->generate('app_login'));
-}
 
 
     protected function getLoginUrl(Request $request): string
