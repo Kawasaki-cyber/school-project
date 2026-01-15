@@ -9,13 +9,15 @@
     {% if rendezvous is empty %}
         <div class="alert alert-info">No rendezvous found.</div>
     {% else %}
-        <table class="table table-striped">
+        <table class="table table-striped table-hover align-middle">
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Reference</th>
                     <th>Patient</th>
                     <th>Medecin</th>
                     <th>Date</th>
+                    <th>Type</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -24,12 +26,21 @@
                 {% for rdv in rendezvous %}
                     <tr>
                         <td>{{ rdv.id }}</td>
-                        <td>{{ rdv.patient.first_name ?? 'N/A' }} {{ rdv.patient.last_name ?? '' }}</td>
-                        <td>{{ rdv.medecin.first_name ?? 'N/A' }} {{ rdv.medecin.last_name ?? '' }}</td>
-                        <td>{{ rdv.appointment_date|date('Y-m-d H:i') }}</td>
-                        <td><span class="badge bg-primary">{{ rdv.status }}</span></td>
+                        <td>{{ rdv.reference }}</td>
+                        <td>{{ rdv.patient.firstName ?? 'N/A' }} {{ rdv.patient.lastName ?? '' }}</td>
+                        <td>{{ rdv.medecin.firstName ?? 'N/A' }} {{ rdv.medecin.lastName ?? '' }}</td>
+                        <td>{{ rdv.dateHeure|date('Y-m-d H:i') }}</td>
+                        <td>{{ rdv.type }}</td>
+                        <td><span class="badge bg-primary">{{ rdv.statut }}</span></td>
                         <td>
                             <a href="{{ path('app_admin_rendezvous_show', {id: rdv.id}) }}" class="btn btn-sm btn-info">View</a>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('app_admin_rendezvous_edit', {id: rdv.id}) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <form method="post" action="{{ path('app_admin_rendezvous_delete', {id: rdv.id}) }}" style="display:inline" onsubmit="return confirm('Delete this rendez-vous?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_rendezvous_' ~ rdv.id) }}">
+                                    <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                                </form>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

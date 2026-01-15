@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Rendezvous{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>✏️ Edit Rendezvous #{{ rendezvous.id }}</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    <div class="card mt-4">
+        <div class="card-body">
+            {{ form_start(form) }}
+                <div class="row g-3">
+                    <div class="col-md-6">{{ form_row(form.patient) }}</div>
+                    <div class="col-md-6">{{ form_row(form.medecin) }}</div>
+                    <div class="col-md-4">{{ form_row(form.dateHeure) }}</div>
+                    <div class="col-md-4">{{ form_row(form.type) }}</div>
+                    <div class="col-md-4">{{ form_row(form.statut) }}</div>
+                    <div class="col-12">{{ form_row(form.motif) }}</div>
+                </div>
+
+                <div class="mt-3 d-flex gap-2">
+                    <button class="btn btn-primary" type="submit">Save</button>
+                    <a href="{{ path('app_admin_rendezvous_show', {id: rendezvous.id}) }}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

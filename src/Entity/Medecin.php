@@ -70,13 +70,28 @@ class Medecin
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $gender = null;
 
+    /**
+     * Relation ManyToOne avec Specialite
+     * Un médecin appartient à une seule spécialité
+     * Une spécialité peut avoir plusieurs médecins
+     */
     #[ORM\ManyToOne(inversedBy: 'medecins')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Specialite $specialite = null;
 
+    /**
+     * Relation OneToMany avec RendezVous
+     * Un médecin peut avoir plusieurs rendez-vous
+     * Chaque rendez-vous appartient à un seul médecin
+     */
     #[ORM\OneToMany(mappedBy: 'medecin', targetEntity: RendezVous::class)]
     private Collection $rendezVous;
 
+    /**
+     * Relation ManyToOne avec Hospital
+     * Un médecin travaille dans un seul hôpital
+     * Un hôpital peut avoir plusieurs médecins
+     */
     #[ORM\ManyToOne(inversedBy: 'medecin')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Hospital $hospital = null;

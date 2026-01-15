@@ -52,9 +52,19 @@ class Patient
     #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeInterface $registration_date = null;
 
+    /**
+     * Relation OneToMany avec RendezVous
+     * Un patient peut avoir plusieurs rendez-vous
+     * Chaque rendez-vous appartient à un seul patient
+     */
     #[ORM\OneToMany(mappedBy: 'patient', targetEntity: RendezVous::class)]
     private Collection $rendezVous;
 
+    /**
+     * Relation OneToOne avec Customer
+     * Un patient peut être associé à un compte customer
+     * Utile pour la gestion des paiements et facturation
+     */
     #[ORM\OneToOne(mappedBy: 'patient', cascade: ['persist', 'remove'])]
     private ?Customer $customer = null;
 

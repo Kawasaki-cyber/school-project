@@ -1,20 +1,116 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PatientController!{% endblock %}
+{% block title %}Patient Dashboard{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>🧑‍🦱 Patient Dashboard</h1>
+        <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary">Logout</a>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/xampp/htdocs/school-project/src/Controller/PatientController.php</code></li>
-        <li>Your template at <code>C:/xampp/htdocs/school-project/templates/patient/index.html.twig</code></li>
-    </ul>
+    <div class="card mb-4">
+        <div class="card-header">
+            <strong>📅 Prendre Rendez-vous</strong>
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('create_rendezvous') }}">
+
+                <div class="col-md-6">
+                    <label class="form-label">Votre nom</label>
+                    <input
+                        type="text"
+                        name="patient_name"
+                        class="form-control"
+                        placeholder="Votre nom complet"
+                        value="{{ app.user.nom ?? '' }}"
+                        required
+                    >
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Doctor</label>
+                    <select name="medecin_id" class="form-select" required>
+                        <option value="">-- Select doctor --</option>
+                        {% for m in medecins %}
+                            <option value="{{ m.id }}">{{ m.firstName }} {{ m.lastName }} ({{ m.specialization }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Date & Time</label>
+                    <input type="datetime-local" name="date_heure" class="form-control" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Type</label>
+                    <select name="type" class="form-select" required>
+                        <option value="Consultation">Consultation</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Emergency">Emergency</option>
+                        <option value="Check-up">Check-up</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Motif (optional)</label>
+                    <input type="text" name="motif" class="form-control" placeholder="Reason...">
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Prendre Rendez-vous</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <strong>📋 Mes rendez-vous</strong>
+        </div>
+        <div class="card-body">
+            {% if rendezvous is empty %}
+                <div class="alert alert-info mb-0">No rendezvous found.</div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Reference</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rdv in rendezvous %}
+                                <tr>
+                                    <td>{{ rdv.id }}</td>
+                                    <td>{{ rdv.reference }}</td>
+                                    <td>{{ rdv.patient.firstName }} {{ rdv.patient.lastName }}</td>
+                                    <td>{{ rdv.medecin.firstName }} {{ rdv.medecin.lastName }}</td>
+                                    <td>{{ rdv.dateHeure|date('Y-m-d H:i') }}</td>
+                                    <td>{{ rdv.type }}</td>
+                                    <td><span class="badge bg-primary">{{ rdv.statut }}</span></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}

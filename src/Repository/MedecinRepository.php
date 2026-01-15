@@ -16,6 +16,26 @@ class MedecinRepository extends ServiceEntityRepository
         parent::__construct($registry, Medecin::class);
     }
 
+    /**
+     * Search medecins by name, specialization, email or license number
+     * @param string $search
+     * @return Medecin[]
+     */
+    public function search(string $search): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.first_name LIKE :search')
+            ->orWhere('m.last_name LIKE :search')
+            ->orWhere('m.specialization LIKE :search')
+            ->orWhere('m.email LIKE :search')
+            ->orWhere('m.license_number LIKE :search')
+            ->setParameter('search', '%' . $search . '%')
+            ->orderBy('m.last_name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 //    /**
 //     * @return Medecin[] Returns an array of Medecin objects
 //     */

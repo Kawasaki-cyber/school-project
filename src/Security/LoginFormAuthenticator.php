@@ -67,18 +67,16 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         // Get the user from the token
         $user = $token->getUser();
         
-        // Check if user has ROLE_ADMIN
-        if ($user && in_array('ROLE_ADMIN', $user->getRoles())) {
+        // Role-based landing pages
+        if ($user && in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return new RedirectResponse($this->urlGenerator->generate('app_admin'));
         }
-        
-        // Check if user has ROLE_MEDECIN
-        if ($user && in_array('ROLE_MEDECIN', $user->getRoles())) {
-            return new RedirectResponse($this->urlGenerator->generate('app_admin'));
+
+        if ($user && in_array('ROLE_DOCTOR', $user->getRoles(), true)) {
+            return new RedirectResponse($this->urlGenerator->generate('app_medecin'));
         }
-        
-        // Check if user has ROLE_PATIENT
-        if ($user && in_array('ROLE_PATIENT', $user->getRoles())) {
+
+        if ($user && in_array('ROLE_PATIENT', $user->getRoles(), true)) {
             return new RedirectResponse($this->urlGenerator->generate('app_rendezvous'));
         }
 

@@ -3,6 +3,12 @@ security:
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
+    # Role hierarchy - ROLE_ADMIN has all permissions
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_USER, ROLE_DOCTOR, ROLE_PATIENT]
+        ROLE_DOCTOR: [ROLE_USER]
+        ROLE_PATIENT: [ROLE_USER]
+
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         app_user_provider:
@@ -22,6 +28,7 @@ security:
 
             logout:
                 path: app_logout
+                target: app_customer
 
             remember_me:
                 secret: '%kernel.secret%'
@@ -35,14 +42,17 @@ security:
         - { path: ^/registration, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: PUBLIC_ACCESS }  # API routes accessible to authenticated users
         
-        # Pages admin (ADMIN role)
-        - { path: ^/admin, roles: PUBLIC_ACCESS }
+        # User dashboard - requires authentication
+        - { path: ^/dashboard, roles: ROLE_USER }
         
-        # Pages medecin (MEDECIN role)
-        - { path: ^/medecin, roles: PUBLIC_ACCESS }
+        # Pages admin (ADMIN role)
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        
+        # Pages medecin (DOCTOR role)
+        - { path: ^/medecin, roles: ROLE_DOCTOR }
         
         # Pages patient (PATIENT role)
-        - { path: ^/patient, roles: PUBLIC_ACCESS }
+        - { path: ^/patient, roles: ROLE_PATIENT }
 
 
 when@test:

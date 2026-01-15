@@ -19,6 +19,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nom = null;
+
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank(message: 'Please enter an email')]
     #[Assert\Email(message: 'The email "{{ value }}" is not a valid email.')]
@@ -39,6 +42,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
     }
 
     public function getEmail(): ?string

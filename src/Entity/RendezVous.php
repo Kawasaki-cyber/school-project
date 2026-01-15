@@ -16,10 +16,20 @@ class RendezVous
     #[ORM\Column(length: 20, unique: true)]
     private ?string $reference = null;
 
+    /**
+     * Relation ManyToOne avec Patient
+     * Chaque rendez-vous est pour un seul patient
+     * Un patient peut avoir plusieurs rendez-vous
+     */
     #[ORM\ManyToOne(targetEntity: Patient::class, inversedBy: 'rendezVous')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Patient $patient = null;
 
+    /**
+     * Relation ManyToOne avec Medecin
+     * Chaque rendez-vous est avec un seul médecin
+     * Un médecin peut avoir plusieurs rendez-vous
+     */
     #[ORM\ManyToOne(targetEntity: Medecin::class, inversedBy: 'rendezVous')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Medecin $medecin = null;
